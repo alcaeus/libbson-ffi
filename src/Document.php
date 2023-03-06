@@ -7,6 +7,7 @@ use IteratorAggregate;
 use Mongodb\LibbsonFfi\FFI\LibBson;
 use Serializable;
 use UnexpectedValueException;
+use function MongoDB\BSON\fromPHP;
 
 final class Document implements BSON, IteratorAggregate, Serializable
 {
@@ -43,6 +44,7 @@ final class Document implements BSON, IteratorAggregate, Serializable
 
     final static public function fromPHP(array|object $value): static
     {
+        return self::fromBSON(fromPHP($value));
     }
 
     final public function get(string $key): mixed

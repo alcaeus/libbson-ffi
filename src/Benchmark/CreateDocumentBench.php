@@ -13,6 +13,8 @@ final class CreateDocumentBench
 {
     private const DOCUMENT = '1200000002666f6f00040000006261720000';
 
+    private const OBJECT = ['foo' => 'bar'];
+
     public function provideLists(): Generator
     {
         yield 'Native' => ['class' => NativeDocument::class];
@@ -26,5 +28,14 @@ final class CreateDocumentBench
         ['class' => $class] = $params;
 
         $class::fromBson(hex2bin(self::DOCUMENT));
+    }
+
+    #[ParamProviders('provideLists')]
+    #[Warmup(1)]
+    public function benchFromPHP(array $params): void
+    {
+        ['class' => $class] = $params;
+
+        $class::fromPHP(self::OBJECT);
     }
 }
