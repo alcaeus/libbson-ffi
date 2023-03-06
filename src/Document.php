@@ -2,12 +2,15 @@
 
 namespace Mongodb\LibbsonFfi;
 
+use FFI;
 use FFI\CData;
 use IteratorAggregate;
 use Mongodb\LibbsonFfi\FFI\LibBson;
+use RuntimeException;
 use Serializable;
 use UnexpectedValueException;
 use function MongoDB\BSON\fromPHP;
+use function strlen;
 
 final class Document implements BSON, IteratorAggregate, Serializable
 {
@@ -57,6 +60,13 @@ final class Document implements BSON, IteratorAggregate, Serializable
 
     final public function has(string $key): bool
     {
+        $iter = LibBson::new('bson_iter_t');
+
+        if (!LibBson::bson_iter_init(FFI::addr($iter), $this->bson)) {
+            throw new RuntimeException('Could not initialize BSON iterator.');
+        }
+
+        return LibBson::bson_iter_find_w_len(FFI::addr($iter), $key, strlen($key));
     }
 
     final public function toPHP(?array $typeMap = null): array|object

@@ -47,4 +47,19 @@ final class LibBson
     {
         return self::getFFI()->bson_copy($bson);
     }
+
+    public static function bson_iter_init(CData $iter, CData $bson): bool
+    {
+        return self::getFFI()->bson_iter_init($iter, $bson);
+    }
+
+    public static function bson_iter_find(CData $iter, string $key): bool
+    {
+        return self::getFFI()->bson_iter_find($iter, $key);
+    }
+
+    public static function bson_iter_find_w_len(CData $iter, string $key, int $keylen): bool
+    {
+        return self::getFFI()->bson_iter_find_w_len($iter, $key, $keylen);
+    }
 }

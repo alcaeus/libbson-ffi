@@ -45,4 +45,13 @@ final class DocumentTest extends TestCase
     {
         $this->assertSame($expected, (string) Document::fromPHP($php));
     }
+
+    public function testHas(): void
+    {
+        $document = Document::fromPHP(['foo' => 'bar', 'bar' => 'baz']);
+
+        $this->assertSame(true, $document->has('foo'));
+        $this->assertSame(true, $document->has('bar'));
+        $this->assertSame(false, $document->has('baz'));
+    }
 }
