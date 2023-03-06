@@ -29,7 +29,7 @@ final class Document implements BSON, IteratorAggregate, Serializable
             throw new UnexpectedValueException('Could not read document from BSON reader');
         }
 
-        $instance = new self($bsonObject);
+        $instance = new self(LibBSON::bson_copy($bsonObject));
 
         if (LibBson::bson_reader_read($reader, $eof) || !$eof) {
             throw new UnexpectedValueException('Reading document did not exhaust input buffer');

@@ -14,4 +14,5 @@ typedef struct _bson_t {
 
 extern bson_reader_t* bson_reader_new_from_data (const char *data, size_t length);
 extern const bson_t* bson_reader_read (bson_reader_t *reader, bool *reached_eof);
+extern bson_t* bson_copy (const bson_t *bson);
 extern const uint8_t* bson_get_data (const bson_t *bson);

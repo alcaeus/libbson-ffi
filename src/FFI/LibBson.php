@@ -42,4 +42,9 @@ final class LibBson
     {
         return FFI::string(FFI::cast('const char*', self::getFFI()->bson_get_data($bson)), $bson->len);
     }
+
+    public static function bson_copy(CData $bson): CData
+    {
+        return self::getFFI()->bson_copy($bson);
+    }
 }
