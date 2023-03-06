@@ -1,0 +1,30 @@
+{
+    "name": "mongodb/libbson-ffi",
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "ext-ffi": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "10.1.x-dev",
+        "phpbench/phpbench": "1.2.x-dev"
+    },
+    "license": "Apache-2.0",
+    "autoload": {
+        "psr-4": {
+            "Mongodb\\LibbsonFfi\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Mongodb\\LibbsonFfi\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Andreas Braun",
+            "email": "git@alcaeus.org"
+        }
+    ],
+    "minimum-stability": "dev"
+}
