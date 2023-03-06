@@ -4,6 +4,7 @@ namespace Mongodb\LibbsonFfi;
 
 use FFI\CData;
 use IteratorAggregate;
+use Mongodb\LibbsonFfi\FFI\LibBson;
 use Serializable;
 use UnexpectedValueException;
 

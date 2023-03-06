@@ -1,6 +1,6 @@
 <?php
 
-namespace Mongodb\LibbsonFfi;
+namespace Mongodb\LibbsonFfi\FFI;
 
 use FFI;
 use FFI\CData;
@@ -10,6 +10,8 @@ final class LibBson
 {
     private static FFI $ffi;
 
+    private function __construct() {}
+
     public static function getFFI(): FFI
     {
         return self::$ffi ??= self::createFFI();
@@ -18,7 +20,12 @@ final class LibBson
     private static function createFFI(): FFI
     {
 //        return FFI::load('/opt/homebrew/include/libbson-1.0/bson/bson.h');
-        return FFI::load(__DIR__ . '/bson.h');
+        return FFI::load(__DIR__ . '/../bson.h');
+    }
+
+    public static function new($type, bool $owned = true, bool $persistent = false): ?CData
+    {
+        return self::getFFI()->new($type, $owned, $persistent);
     }
 
     public static function bson_reader_new_from_data(string $data): CData
