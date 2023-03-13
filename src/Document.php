@@ -14,9 +14,8 @@ use function strlen;
 
 final class Document implements BSON, IteratorAggregate, Serializable
 {
-    private function __construct(private CData $bson)
-    {
-    }
+    /** @internal */
+    public function __construct(public readonly CData $cdata) {}
 
     public function __destruct()
     {
@@ -52,21 +51,33 @@ final class Document implements BSON, IteratorAggregate, Serializable
 
     final public function get(string $key): mixed
     {
+        $iterator = LibBson::new('bson_iter_t');
+
+        if (!LibBson::bson_iter_init(FFI::addr($iterator), $this->cdata)) {
+            throw new RuntimeException('Could not initialize BSON iterator.');
+        }
+
+        if (!LibBson::bson_iter_find_w_len(FFI::addr($iterator), $key, strlen($key))) {
+            throw new RuntimeException(sprintf('Could not find key "%s" in BSON data', $key));
+        }
+
+        return LibBson::bson_iter_to_php(FFI::addr($iterator));
     }
 
     final public function getIterator(): Iterator
     {
+        return new Iterator($this);
     }
 
     final public function has(string $key): bool
     {
-        $iter = LibBson::new('bson_iter_t');
+        $iterator = LibBson::new('bson_iter_t');
 
-        if (!LibBson::bson_iter_init(FFI::addr($iter), $this->bson)) {
+        if (!LibBson::bson_iter_init(FFI::addr($iterator), $this->cdata)) {
             throw new RuntimeException('Could not initialize BSON iterator.');
         }
 
-        return LibBson::bson_iter_find_w_len(FFI::addr($iter), $key, strlen($key));
+        return LibBson::bson_iter_find_w_len(FFI::addr($iterator), $key, strlen($key));
     }
 
     final public function toPHP(?array $typeMap = null): array|object
@@ -83,7 +94,7 @@ final class Document implements BSON, IteratorAggregate, Serializable
 
     final public function __toString(): string
     {
-        return LibBson::bson_get_data($this->bson);
+        return LibBson::bson_get_data($this->cdata);
     }
 
     final public static function __set_state(array $properties): Document

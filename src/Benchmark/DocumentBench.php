@@ -2,6 +2,7 @@
 
 namespace Mongodb\LibbsonFfi\Benchmark;
 
+use Exception;
 use Generator;
 use MongoDB\BSON\Document as NativeDocument;
 use Mongodb\LibbsonFfi\Document as FFIDocument;
@@ -91,5 +92,69 @@ final class DocumentBench
 
         $object = self::getHugeDocument($class);
         $object->has('bar');
+    }
+
+    #[ParamProviders('provideLists')]
+    #[Warmup(1)]
+    public function benchGet(array $params): void
+    {
+        ['class' => $class] = $params;
+
+        $object = self::getDocument($class);
+        $object->get('foo');
+    }
+
+    #[ParamProviders('provideLists')]
+    #[Warmup(1)]
+    public function benchGetHuge(array $params): void
+    {
+        ['class' => $class] = $params;
+
+        $object = self::getHugeDocument($class);
+        try {
+            $object->get('bar');
+        } catch (Exception) {
+            // Silence exception, we're expecting one
+        }
+    }
+
+    #[ParamProviders('provideLists')]
+    #[Warmup(1)]
+    public function benchGetIterator(array $params): void
+    {
+        ['class' => $class] = $params;
+
+        $object = self::getDocument($class);
+        $object->getIterator();
+    }
+
+    #[ParamProviders('provideLists')]
+    #[Warmup(1)]
+    public function benchGetIteratorHuge(array $params): void
+    {
+        ['class' => $class] = $params;
+
+        $object = self::getHugeDocument($class);
+        $object->getIterator();
+    }
+
+    #[ParamProviders('provideLists')]
+    #[Warmup(1)]
+    public function benchIterate(array $params): void
+    {
+        ['class' => $class] = $params;
+
+        $object = self::getDocument($class);
+        foreach ($object->getIterator() as $key => $value) {}
+    }
+
+    #[ParamProviders('provideLists')]
+    #[Warmup(1)]
+    public function benchIterateHuge(array $params): void
+    {
+        ['class' => $class] = $params;
+
+        $object = self::getHugeDocument($class);
+        foreach ($object->getIterator() as $key => $value) {}
     }
 }

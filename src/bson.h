@@ -1,7 +1,7 @@
 #define FFI_LIB "/opt/homebrew/lib/libbson-1.0.dylib"
 #define FFI_SCOPE "libbson"
 
-/** From bson_types.h */
+/** From bson-types.h */
 typedef struct {
    uint32_t type;
    /*< private >*/
@@ -134,10 +134,26 @@ typedef struct {
 /** From bson.h */
 extern bson_reader_t* bson_reader_new_from_data (const char *data, size_t length);
 extern const bson_t* bson_reader_read (bson_reader_t *reader, bool *reached_eof);
+extern bson_t* bson_new_from_data(const uint8_t *data, size_t length);
 extern bson_t* bson_copy (const bson_t *bson);
 extern const uint8_t* bson_get_data (const bson_t *bson);
 
-/** From bson_iter.h */
+/** From bson-iter.h */
 extern bool bson_iter_init (bson_iter_t *iter, const bson_t *bson);
 extern bool bson_iter_find (bson_iter_t *iter, const char *key);
 extern bool bson_iter_find_w_len (bson_iter_t *iter, const char *key, int keylen);
+extern bool bson_iter_next(bson_iter_t *iter);
+extern const char* bson_iter_key (const bson_iter_t *iter);
+extern bson_type_t bson_iter_type (const bson_iter_t *iter);
+extern int64_t bson_iter_as_int64 (const bson_iter_t *iter);
+extern const char* bson_iter_utf8 (const bson_iter_t *iter, uint32_t *length);
+extern bool bson_iter_bool (const bson_iter_t *iter);
+extern double bson_iter_double (const bson_iter_t *iter);
+extern const bson_oid_t* bson_iter_oid (const bson_iter_t *iter);
+extern void bson_iter_document (const bson_iter_t *iter, uint32_t *document_len, const uint8_t **document);
+
+/** From bson-utf8.h */
+extern bool bson_utf8_validate (const char *utf8, size_t utf8_len, bool allow_null);
+
+/** From bson-oid.h */
+extern void bson_oid_to_string (const bson_oid_t *oid, char str[25]);

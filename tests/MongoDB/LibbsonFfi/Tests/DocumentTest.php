@@ -3,10 +3,13 @@
 namespace MongoDB\LibbsonFfi\Tests;
 
 use Generator;
+use MongoDB\BSON\ObjectId;
 use Mongodb\LibbsonFfi\Document;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use function hex2bin;
+use function iterator_to_array;
 
 final class DocumentTest extends TestCase
 {
@@ -43,15 +46,70 @@ final class DocumentTest extends TestCase
     #[DataProvider('fromPHPSamples')]
     public function testFromPHP($expected, $php): void
     {
-        $this->assertSame($expected, (string) Document::fromPHP($php));
+        self::assertSame($expected, (string) Document::fromPHP($php));
     }
 
     public function testHas(): void
     {
         $document = Document::fromPHP(['foo' => 'bar', 'bar' => 'baz']);
 
-        $this->assertSame(true, $document->has('foo'));
-        $this->assertSame(true, $document->has('bar'));
-        $this->assertSame(false, $document->has('baz'));
+        self::assertSame(true, $document->has('foo'));
+        self::assertSame(true, $document->has('bar'));
+        self::assertSame(false, $document->has('baz'));
+    }
+
+    public function testGet(): void
+    {
+        $document = Document::fromPHP(['foo' => 'bar', 'bar' => 'baz']);
+
+        self::assertSame('bar', $document->get('foo'));
+        self::assertSame('baz', $document->get('bar'));
+
+        self::expectException(RuntimeException::class);
+        self::expectExceptionMessage('Could not find key "baz" in BSON data');
+        $document->get('baz');
+    }
+
+    public function testGetDocument(): void
+    {
+        $object = [
+            'document' => (object) [
+                'foo' => 'bar',
+            ],
+        ];
+
+        $document = Document::fromPHP($object);
+        $value = $document->get('document');
+
+        self::assertInstanceOf(Document::class, $value);
+        self::assertSame('bar', $value->get('foo'));
+    }
+
+    public function testGetIterator(): void
+    {
+        $object = [
+            'string' => 'bar',
+            'int32' => 1,
+            'int64' => 2**33,
+            'double' => 3.14,
+            'bool' => true,
+            'null' => null,
+            'oid' => new ObjectId(),
+            'object' => (object) [
+                'foo' => 'bar',
+            ],
+        ];
+
+        $expected = [
+            'object' => Document::fromPHP($object['object']),
+        ] + $object;
+
+        $document = Document::fromPHP($object);
+        $iterator = $document->getIterator();
+
+        self::assertEquals(
+            $expected,
+            iterator_to_array($iterator),
+        );
     }
 }
